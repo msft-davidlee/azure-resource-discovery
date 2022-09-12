@@ -22,7 +22,7 @@ namespace AzureResourceDiscovery
 
                     try
                     {
-                        if (!gen.GenerateFiles(o.FilePath))
+                        if (!gen.GenerateFiles(File.ReadAllText(o.FilePath)))
                         {
                             hasErrors = true;
                             using TextWriter errorWriter = Console.Error;

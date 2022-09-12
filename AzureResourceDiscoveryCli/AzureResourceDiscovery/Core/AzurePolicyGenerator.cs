@@ -9,9 +9,9 @@ namespace AzureResourceDiscovery.Core
 {
     public class AzurePolicyGenerator
     {
-        public bool GenerateFiles(string filePath)
+        public bool GenerateFiles(string content)
         {
-            var manifest = JsonSerializer.Deserialize<Manifest>(File.ReadAllText(filePath));
+            var manifest = JsonSerializer.Deserialize<Manifest>(content);
             throw new NotImplementedException();
         }
     }
