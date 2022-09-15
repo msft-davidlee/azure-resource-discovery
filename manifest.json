@@ -1,6 +1,7 @@
 {
   "unique-resources": [
     {
+      "name": "shared-container-registry",
       "ard-resource-id": "shared-container-registry",
       "resource-group-names": [
         "shared-services-dev",
@@ -9,6 +10,7 @@
       "resource-type": "Microsoft.ContainerRegistry/registries"
     },
     {
+      "name": "vnet-pri",
       "ard-resource-id": "vnet-pri",
       "resource-group-names": [
         "networking-dev-pri",
@@ -17,6 +19,7 @@
       "resource-type": "Microsoft.Network/virtualNetworks"
     },
     {
+      "name": "vnet-dr",
       "ard-resource-id": "vnet-dr",
       "resource-group-names": [
         "networking-dev-dr",

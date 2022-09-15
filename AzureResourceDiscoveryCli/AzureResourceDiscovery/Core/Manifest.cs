@@ -4,6 +4,9 @@ namespace AzureResourceDiscovery.Core
 {
     public class UniqueResource
     {
+        [JsonPropertyName("name")]
+        public string? Name { get; set; }
+
         [JsonPropertyName("ard-resource-id")]
         public string? ResourceId { get; set; }
 

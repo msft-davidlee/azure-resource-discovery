@@ -2,9 +2,28 @@
 
 namespace AzureResourceDiscovery.Core
 {
+    public class AzurePolicyResult
+    {
+        public AzurePolicyResult(AzurePolicy azurePolicy, string name, string displayName, string description)
+        {
+            AzurePolicy = azurePolicy;
+            Name = name;
+            DisplayName = displayName;
+            Description = description;
+        }
+
+        public AzurePolicy AzurePolicy { get; }
+
+        public string Name { get; }
+
+        public string DisplayName { get; }
+
+        public string Description { get; }
+    }
+
     public class AzurePolicyGenerator
     {
-        public bool GenerateFiles(string content, Action<AzurePolicy> processAzurePolicy)
+        public bool GenerateFiles(string content, Action<AzurePolicyResult> processAzurePolicyResult)
         {
             var manifest = JsonSerializer.Deserialize<Manifest>(content);
 
@@ -17,6 +36,7 @@ namespace AzureResourceDiscovery.Core
                     AzurePolicy azurePolicy = new();
 
                     if (uniqueResource.ResourceGroupNames == null) throw new ApplicationException("ResourceGroupNames cannot be null!");
+                    if (string.IsNullOrEmpty(uniqueResource.Name)) throw new ApplicationException("Name cannot be null.");
 
                     azurePolicy.If.AnyOfResourceGroupNames(uniqueResource.ResourceGroupNames);
 
@@ -24,7 +44,7 @@ namespace AzureResourceDiscovery.Core
 
                     azurePolicy.ThenEffectModify.Details.AddOrReplaceTag("ard-resource-id", uniqueResource.ResourceId);
 
-                    processAzurePolicy(azurePolicy);
+                    processAzurePolicyResult(new AzurePolicyResult(azurePolicy, uniqueResource.Name, "Enforce ard-resource-id", $"Enforce ard-resource-id for {uniqueResource.Name}"));
                 }
             }
 
