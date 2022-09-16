@@ -1,6 +1,7 @@
 ﻿using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Xml.Linq;
 
 namespace AzureResourceDiscovery.Core
 {
@@ -36,35 +37,40 @@ namespace AzureResourceDiscovery.Core
     {
         public AzurePolicyDtoIf()
         {
-            AnyOf = new List<AzurePolicyDtoField>();
+            AllOf = new List<AzurePolicyDtoField>();
         }
 
-        [JsonPropertyName("anyOf")]
-        public List<AzurePolicyDtoField> AnyOf { get; }
+        [JsonPropertyName("allOf")]
+        public List<AzurePolicyDtoField> AllOf { get; }
 
-        public void AnyOfResourceGroupNames(List<string> names)
+        public void UniqueResource(string type, string tagKey, string tagValue)
         {
-            foreach (var name in names)
+            AllOf.AddRange(new[]
             {
-                AnyOf.Add(new AzurePolicyDtoField
+                new AzurePolicyDtoField
                 {
-                    Value = "[resourceGroup().name]",
-                    IsEquals = name
-                });
-            }
+                    Field = "type",
+                    IsEquals = type
+                },
+                new AzurePolicyDtoField
+                {
+                    Field = $"tags['{tagKey}']",
+                    IsNotEquals = tagValue
+                }
+            });
         }
     }
 
     public class AzurePolicyDtoField
     {
-        [JsonPropertyName("value")]
-        public string? Value { get; set; }
-
         [JsonPropertyName("field")]
-        public string? Name { get; set; }
+        public string? Field { get; set; }
 
         [JsonPropertyName("equals")]
         public string? IsEquals { get; set; }
+
+        [JsonPropertyName("notEquals")]
+        public string? IsNotEquals { get; set; }
     }
 
     public class AzurePolicyThenEffectModify
@@ -74,7 +80,8 @@ namespace AzureResourceDiscovery.Core
             Details = new();
         }
 
-        public string Modify = "Modify";
+        [JsonPropertyName("effect")]
+        public string Effect { get; set; } = "modify";
 
         [JsonPropertyName("details")]
         public AzurePolicyThenEffectDetails Details { get; set; }
@@ -85,17 +92,19 @@ namespace AzureResourceDiscovery.Core
         public AzurePolicyThenEffectDetails()
         {
             Operations = new();
+            RoleDefinationIds = new();
         }
 
-        [JsonPropertyName("conflictEffect")]
-        public string conflictEffect = "deny";
-
+        [JsonPropertyName("operations")]
         public List<AzurePolicyThenEffectDetailsOperation> Operations { get; set; }
 
         public void AddOrReplaceTag(string key, string value)
         {
             Operations.Add(new AzurePolicyThenEffectDetailsOperation("addOrReplace", $"tags['{key}']", value));
         }
+
+        [JsonPropertyName("roleDefinitionIds")]
+        public List<string> RoleDefinationIds { get; set; }
     }
 
     public class AzurePolicyThenEffectDetailsOperation
@@ -114,6 +123,14 @@ namespace AzureResourceDiscovery.Core
             Operation = operation;
             Field = field;
             Value = value;
+        }
+    }
+
+    public static class Constants
+    {
+        public static class RoleDefinationIds
+        {
+            public const string TagContributor = "/providers/microsoft.authorization/roleDefinitions/4a9ae827-6dc8-4573-8ac7-8239d42aa03f";
         }
     }
 }

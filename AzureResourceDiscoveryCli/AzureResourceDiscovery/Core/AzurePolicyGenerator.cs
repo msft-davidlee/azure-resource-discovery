@@ -37,12 +37,19 @@ namespace AzureResourceDiscovery.Core
 
                     if (uniqueResource.ResourceGroupNames == null) throw new ApplicationException("ResourceGroupNames cannot be null!");
                     if (string.IsNullOrEmpty(uniqueResource.Name)) throw new ApplicationException("Name cannot be null.");
+                    if (string.IsNullOrEmpty(uniqueResource.ResourceType)) throw new ApplicationException("ResourceType cannot be null.");
+                    if (string.IsNullOrEmpty(uniqueResource.ResourceId)) throw new ApplicationException("ResourceId cannot be null.");
 
-                    azurePolicy.If.AnyOfResourceGroupNames(uniqueResource.ResourceGroupNames);
+                    azurePolicy.If.UniqueResource(
+                        uniqueResource.ResourceType,
+                        UniqueResource.TagKey,
+                        uniqueResource.ResourceId);
 
                     if (string.IsNullOrEmpty(uniqueResource.ResourceId)) throw new ApplicationException("ResourceId cannot be null!");
 
                     azurePolicy.ThenEffectModify.Details.AddOrReplaceTag("ard-resource-id", uniqueResource.ResourceId);
+                    
+                    azurePolicy.ThenEffectModify.Details.RoleDefinationIds.Add(Constants.RoleDefinationIds.TagContributor);
 
                     processAzurePolicyResult(new AzurePolicyResult(azurePolicy, uniqueResource.Name, "Enforce ard-resource-id", $"Enforce ard-resource-id for {uniqueResource.Name}"));
                 }
