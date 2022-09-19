@@ -86,7 +86,7 @@ foreach ($item in $manifest.Items) {
 
     Remove-Item $filePath -Force
     if (!$rootDir) {
-        $rootDir = $line.Split('\')[1]
+        $rootDir = $filePath.Split('\')[1]
     }
 }
 
