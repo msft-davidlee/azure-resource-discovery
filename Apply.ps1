@@ -1,4 +1,9 @@
+param([Parameter(Mandatory = $true)][string]$ManifestFilePath)
 $ErrorActionPreference = "Stop"
+
+if (!(Test-Path $ManifestFilePath)) {
+    throw "Invalid manifest file path $ManifestFilePath"
+}
 
 $resultsFile = "results.json"
 
@@ -9,7 +14,8 @@ if ($LastExitCode -ne 0) {
     throw "An error has occured. Unable to query for resource groups."
 }
 
-$customerManifest = Get-Content ..\..\manifest.json | ConvertFrom-Json
+$customerManifest = Get-Content $ManifestFilePath | ConvertFrom-Json
+
 # Policy assignment requires the use of a managed identity.
 $mi = $customerManifest."managed-identity"
 $miResourceGroup = $mi."resource-group-name"
@@ -20,7 +26,7 @@ if (!$exist) {
 
     # if group does not exist, create it
     Write-Host "Managed identity resource group $miResourceGroup does not exist. Creating it now..."
-    az group create --name $miResourceGroup --location $customerManifest."resource-group-location" --tags ard-solution-id=ard | ConvertFrom-Json
+    az group create --name $miResourceGroup --location $customerManifest."resource-group-location" --tags ard-internal-solution-id=ard | ConvertFrom-Json
     if ($LastExitCode -ne 0) {
         throw "An error has occured. Unable to create resource group $miResourceGroup."
     }
@@ -36,13 +42,13 @@ if ($LastExitCode -ne 0) {
 
 if ($ids.Length -eq 0 -or ($ids | Where-Object { $_.name -eq $miName }).Length -ne 1) {
     # Create managed identity in resource group
-    $mid = az identity create --name $miName --resource-group $miResourceGroup --tags ard-solution-id=ard | ConvertFrom-Json    
+    $mid = az identity create --name $miName --resource-group $miResourceGroup --tags ard-internal-solution-id=ard | ConvertFrom-Json    
 }
 else {
     $mid = $ids[0]
 }
 
-dotnet run -- -o $resultsFile -d .\ -f ..\..\manifest.json
+dotnet run -- -o $resultsFile -d .\ -f $ManifestFilePath
 if ($LastExitCode -ne 0) {
     Pop-Location
     throw "An error has occured. Unable to generate Azure policy file(s)."
@@ -59,7 +65,7 @@ $taggingRoleId = "/subscriptions/$subId/providers/Microsoft.Authorization/roleDe
 
 foreach ($item in $manifest.Items) {
     
-    $name = $item.Name
+    $name = "ard-" + $item.Name
     $displayName = $item.DisplayName
     $description = $item.Description
     $filePath = $item.FilePath
@@ -80,7 +86,8 @@ foreach ($item in $manifest.Items) {
 
             # if group does not exist, create it
             Write-Host "Group $resourceGroupName does not exist. Creating it now..."
-            $newGroup = az group create --name $resourceGroupName --location $manifest.ResourceGroupLocation | ConvertFrom-Json
+            $newGroup = az group create --name $resourceGroupName --location $manifest.ResourceGroupLocation `
+                --tags ard-internal-solution-id=ard | ConvertFrom-Json
             if ($LastExitCode -ne 0) {
                 throw "An error has occured. Unable to create resource group $resourceGroupName."
             }
@@ -98,7 +105,7 @@ foreach ($item in $manifest.Items) {
         }
 
         $policyId = "/subscriptions/$subId/providers/Microsoft.Authorization/policyDefinitions/$name"
-        $assignmentName = "$name-assignment"
+        $assignmentName = "$name"
         $scope = "/subscriptions/$subId/resourceGroups/$resourceGroupName"
         az policy assignment create --name $assignmentName  --scope $scope --policy $policyId `
             --mi-user-assigned $mid.id --location $mid.location
