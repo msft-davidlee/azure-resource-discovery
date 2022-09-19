@@ -40,9 +40,11 @@ namespace AzureResourceDiscovery.Core
             AnyOf = new List<AzurePolicyDtoField>();
         }
 
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         [JsonPropertyName("allOf")]
         public List<AzurePolicyDtoField>? AllOf { get; set; }
 
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         [JsonPropertyName("anyOf")]
         public List<AzurePolicyDtoField>? AnyOf { get; set; }
 
