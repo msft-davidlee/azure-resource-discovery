@@ -38,10 +38,9 @@ foreach ($item in $manifest.Items) {
     }
     $resourceGroupNames = $item.ResourceGroupNames
 
-    foreach ($group in $resourceGroupNames) {
+    foreach ($resourceGroupName in $resourceGroupNames) {
 
         # Does rg exist in sub?
-        $resourceGroupName = $group.name
         $exist = $groups | Where-Object { $_.Name -eq $resourceGroupName }
         if ($exist.Length -eq 0) {
 
@@ -85,7 +84,7 @@ foreach ($item in $manifest.Items) {
         }
     }
 
-    Remove-Item $line -Force
+    Remove-Item $filePath -Force
     if (!$rootDir) {
         $rootDir = $line.Split('\')[1]
     }
