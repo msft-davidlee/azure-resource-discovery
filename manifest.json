@@ -1,11 +1,12 @@
 {
+  "resource-group-location": "centralus",
   "unique-resources": [
     {
       "name": "shared-container-registry",
       "ard-resource-id": "shared-container-registry",
       "resource-group-names": [
-        "shared-services-dev",
-        "shared-services-prod"
+        "test-shared-services-dev",
+        "test-shared-services-prod"
       ],
       "resource-type": "Microsoft.ContainerRegistry/registries"
     },
@@ -13,8 +14,8 @@
       "name": "vnet-pri",
       "ard-resource-id": "vnet-pri",
       "resource-group-names": [
-        "networking-dev-pri",
-        "networking-prod-pri"
+        "test-networking-dev-pri",
+        "test-networking-prod-pri"
       ],
       "resource-type": "Microsoft.Network/virtualNetworks"
     },
@@ -22,8 +23,8 @@
       "name": "vnet-dr",
       "ard-resource-id": "vnet-dr",
       "resource-group-names": [
-        "networking-dev-dr",
-        "networking-prod-dr"
+        "test-networking-dev-dr",
+        "test-networking-prod-dr"
       ],
       "resource-type": "Microsoft.Network/virtualNetworks"
     }
@@ -31,7 +32,7 @@
   "group-resources": [
     {
       "resource-group-names": [
-        "shared-services-dev"
+        "test-shared-services-dev"
       ],
       "ard-solution-id": "shared1",
       "ard-environment": "dev",
@@ -39,7 +40,7 @@
     },
     {
       "resource-group-names": [
-        "shared-services-prod"
+        "test-shared-services-prod"
       ],
       "ard-solution-id": "shared1",
       "ard-environment": "prod",
@@ -47,9 +48,9 @@
     },
     {
       "resource-group-names": [
-        "microservice1-dev",
-        "microservice2-dev",
-        "microservice3-dev"
+        "test-microservice1-dev",
+        "test-microservice2-dev",
+        "test-microservice3-dev"
       ],
       "ard-solution-id": "someapp1",
       "ard-environment": "dev",
@@ -57,9 +58,9 @@
     },
     {
       "resource-group-names": [
-        "microservice1-prod-pri",
-        "microservice2-prod-pri",
-        "microservice3-prod-pri"
+        "test-microservice1-prod-pri",
+        "test-microservice2-prod-pri",
+        "test-microservice3-prod-pri"
       ],
       "ard-solution-id": "someapp2",
       "ard-environment": "prod",
@@ -67,9 +68,9 @@
     },
     {
       "resource-group-names": [
-        "microservice1-prod-dr",
-        "microservice2-prod-dr",
-        "microservice3-prod-dr"
+        "test-microservice1-prod-dr",
+        "test-microservice2-prod-dr",
+        "test-microservice3-prod-dr"
       ],
       "ard-solution-id": "someapp2",
       "ard-environment": "prod",

@@ -4,12 +4,13 @@ namespace AzureResourceDiscovery.Core
 {
     public class AzurePolicyResult
     {
-        public AzurePolicyResult(AzurePolicy azurePolicy, string name, string displayName, string description)
+        public AzurePolicyResult(AzurePolicy azurePolicy, string name, string displayName, string description, List<string> resourceGroupNames)
         {
             AzurePolicy = azurePolicy;
             Name = name;
             DisplayName = displayName;
             Description = description;
+            ResourceGroupNames = resourceGroupNames;
         }
 
         public AzurePolicy AzurePolicy { get; }
@@ -19,19 +20,22 @@ namespace AzureResourceDiscovery.Core
         public string DisplayName { get; }
 
         public string Description { get; }
+        public List<string> ResourceGroupNames { get; }
     }
 
     public class AzurePolicyGenerator
     {
+        public Manifest? Manifest { get; private set; }
+
         public bool GenerateFiles(string content, Action<AzurePolicyResult> processAzurePolicyResult)
         {
-            var manifest = JsonSerializer.Deserialize<Manifest>(content);
+            Manifest = JsonSerializer.Deserialize<Manifest>(content);
 
-            if (manifest == null) return false;
+            if (Manifest == null) return false;
 
-            if (manifest.UniqueResources != null)
+            if (Manifest.UniqueResources != null)
             {
-                foreach (var uniqueResource in manifest.UniqueResources)
+                foreach (var uniqueResource in Manifest.UniqueResources)
                 {
                     AzurePolicy azurePolicy = new();
 
@@ -48,10 +52,18 @@ namespace AzureResourceDiscovery.Core
                     if (string.IsNullOrEmpty(uniqueResource.ResourceId)) throw new ApplicationException("ResourceId cannot be null!");
 
                     azurePolicy.ThenEffectModify.Details.AddOrReplaceTag("ard-resource-id", uniqueResource.ResourceId);
-                    
+
                     azurePolicy.ThenEffectModify.Details.RoleDefinationIds.Add(Constants.RoleDefinationIds.TagContributor);
 
-                    processAzurePolicyResult(new AzurePolicyResult(azurePolicy, uniqueResource.Name, "Enforce ard-resource-id", $"Enforce ard-resource-id for {uniqueResource.Name}"));
+                    processAzurePolicyResult(new AzurePolicyResult(azurePolicy, uniqueResource.Name, "Enforce ard-resource-id", $"Enforce ard-resource-id for {uniqueResource.Name}", uniqueResource.ResourceGroupNames));
+                }
+            }
+
+            if (Manifest.GroupResources != null)
+            {
+                foreach (var groupResource in Manifest.GroupResources)
+                {
+                    //groupResource.
                 }
             }
 

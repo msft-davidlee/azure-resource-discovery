@@ -1,6 +1,7 @@
 ﻿using AzureResourceDiscovery.Core;
 using CommandLine;
 using System.Text;
+using System.Text.Json;
 
 namespace AzureResourceDiscovery
 {
@@ -20,19 +21,17 @@ namespace AzureResourceDiscovery
 
         private static int _counter = 0;
         private static string? _directoryPath;
-        private static readonly StringBuilder _outputFile = new();
+        private static readonly AzurePolicyManifest _manifest = new();
 
         private static void ProcessAzurePolicy(AzurePolicyResult azurePolicyResult)
         {
-            string fileName = $"{_directoryPath}\\{_counter}.json";
+            string filePath = $"{_directoryPath}\\{_counter}.json";
             var content = azurePolicyResult.AzurePolicy.ToString();
-            File.WriteAllText(fileName, content);
-
+            File.WriteAllText(filePath, content);
             _counter += 1;
+            _manifest.Add(azurePolicyResult, filePath);
 
-            _outputFile.AppendLine($"{azurePolicyResult.Name}|{azurePolicyResult.DisplayName}|{azurePolicyResult.Description}|{fileName}");
-
-            Console.WriteLine($"Created {fileName}");
+            Console.WriteLine($"Created {filePath}");
         }
 
         static int Main(string[] args)
@@ -84,8 +83,11 @@ namespace AzureResourceDiscovery
                         }
                         else
                         {
-                            File.WriteAllText(o.OutputFilePath, _outputFile.ToString());
-                            Console.WriteLine("");
+                            if (gen.Manifest == null) throw new ApplicationException("Manifest cannot be null!");
+
+                            _manifest.ResourceGroupLocation = gen.Manifest.ResourceGroupLocation;
+
+                            File.WriteAllText(o.OutputFilePath, JsonSerializer.Serialize(_manifest));
                         }
                     }
                     catch (Exception e)

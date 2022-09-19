@@ -37,6 +37,9 @@ namespace AzureResourceDiscovery.Core
 
     public class Manifest
     {
+        [JsonPropertyName("resource-group-location")]
+        public string? ResourceGroupLocation { get; set; }
+
         [JsonPropertyName("unique-resources")]
         public List<UniqueResource>? UniqueResources { get; set; }
 
