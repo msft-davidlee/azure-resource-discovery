@@ -2,7 +2,7 @@
   "resource-group-location": "centralus",
   "unique-resources": [
     {
-      "name": "shared-container-registry",
+      "name": "test-shared-container-registry",
       "ard-resource-id": "shared-container-registry",
       "resource-group-names": [
         "test-shared-services-dev",
@@ -11,7 +11,7 @@
       "resource-type": "Microsoft.ContainerRegistry/registries"
     },
     {
-      "name": "vnet-pri",
+      "name": "test-vnet-pri",
       "ard-resource-id": "vnet-pri",
       "resource-group-names": [
         "test-networking-dev-pri",
@@ -20,7 +20,7 @@
       "resource-type": "Microsoft.Network/virtualNetworks"
     },
     {
-      "name": "vnet-dr",
+      "name": "test-vnet-dr",
       "ard-resource-id": "vnet-dr",
       "resource-group-names": [
         "test-networking-dev-dr",
