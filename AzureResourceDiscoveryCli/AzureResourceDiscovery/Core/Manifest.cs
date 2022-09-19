@@ -22,16 +22,19 @@ namespace AzureResourceDiscovery.Core
 
     public class GroupResources
     {
+        [JsonPropertyName("name")]
+        public string? Name { get; set; }
+
         [JsonPropertyName("resource-group-names")]
         public List<string>? ResourceGroupNames { get; set; }
 
-        [JsonPropertyName("ard-solution-id")]
+        [JsonPropertyName(Constants.ArdSolutionId)]
         public string? SolutionId { get; set; }
 
-        [JsonPropertyName("ard-environment")]
+        [JsonPropertyName(Constants.ArdEnvironment)]
         public string? Environment { get; set; }
 
-        [JsonPropertyName("ard-region")]
+        [JsonPropertyName(Constants.ArdRegion)]
         public string? Region { get; set; }
     }
 

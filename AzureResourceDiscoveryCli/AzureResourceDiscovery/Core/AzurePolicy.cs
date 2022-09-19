@@ -1,7 +1,6 @@
 ﻿using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Xml.Linq;
 
 namespace AzureResourceDiscovery.Core
 {
@@ -38,13 +37,30 @@ namespace AzureResourceDiscovery.Core
         public AzurePolicyDtoIf()
         {
             AllOf = new List<AzurePolicyDtoField>();
+            AnyOf = new List<AzurePolicyDtoField>();
         }
 
         [JsonPropertyName("allOf")]
-        public List<AzurePolicyDtoField> AllOf { get; }
+        public List<AzurePolicyDtoField>? AllOf { get; set; }
+
+        [JsonPropertyName("anyOf")]
+        public List<AzurePolicyDtoField>? AnyOf { get; set; }
+
+        public void AnyResource(Dictionary<string, string> tags)
+        {
+            AllOf = null;
+
+            if (AnyOf == null) throw new ApplicationException("AnyOf property state is invalid.");
+
+            AnyOf.AddRange(tags.Select((x) => new AzurePolicyDtoField { Field = $"tags['{x.Key}']", IsNotEquals = x.Value }));
+        }
 
         public void UniqueResource(string type, string tagKey, string tagValue)
         {
+            AnyOf = null;
+
+            if (AllOf == null) throw new ApplicationException("AllOf property state is invalid.");
+
             AllOf.AddRange(new[]
             {
                 new AzurePolicyDtoField
@@ -128,6 +144,10 @@ namespace AzureResourceDiscovery.Core
 
     public static class Constants
     {
+        public const string ArdSolutionId = "ard-solution-id";
+        public const string ArdEnvironment = "ard-environment";
+        public const string ArdRegion = "ard-region";
+
         public static class RoleDefinationIds
         {
             public const string TagContributor = "/providers/microsoft.authorization/roleDefinitions/4a9ae827-6dc8-4573-8ac7-8239d42aa03f";
