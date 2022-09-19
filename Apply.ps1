@@ -18,7 +18,7 @@ if ($LastExitCode -ne 0) {
 $taggingRoleId = "/subscriptions/$subId/providers/Microsoft.Authorization/roleDefinitions/4a9ae827-6dc8-4573-8ac7-8239d42aa03f"
 $identityName = "tag-policy-identity"
 
-$groups = az group list --query "[].{Name:name, Id:id}"
+$groups = az group list --query "[].{Name:name, Id:id}" | ConvertFrom-Json
 if ($LastExitCode -ne 0) {
     throw "An error has occured. Unable to query for resource groups."
 }
@@ -42,15 +42,18 @@ foreach ($item in $manifest.Items) {
 
         # Does rg exist in sub?
         $exist = $groups | Where-Object { $_.Name -eq $resourceGroupName }
-        if ($exist.Length -eq 0) {
+        if (!$exist) {
 
             # if group does not exist, create it
-            Write-Host "Group $resourceGroupName does not exit. Creating it now..."
+            Write-Host "Group $resourceGroupName does not exist. Creating it now..."
             $newGroup = az group create --name $resourceGroupName --location $manifest.ResourceGroupLocation | ConvertFrom-Json
             if ($LastExitCode -ne 0) {
                 throw "An error has occured. Unable to create resource group $resourceGroupName."
             }
             $groups += @{ Name = $newGroup.name; Id = $newGroup.id }
+        }
+        else {
+            Write-Host "Group $resourceGroupName exist"
         }
 
         # Policy assignment requires the use of a managed identity.
