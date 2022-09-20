@@ -43,7 +43,7 @@ jobs:
         uses: azure/arm-deploy@v1
         with:
           deploymentName: 'deploy-${{ needs.setup.outputs.build_env }}-${{ github.run_number }}'
-          resourceGroupName: test-shared-services-dev
+          resourceGroupName: test-shared-services-${{ needs.setup.outputs.build_env }}
           template: ./deployment/deploy.bicep
           parameters: >
               solutionName=${{ secrets.SOLUTION_NAME }}
