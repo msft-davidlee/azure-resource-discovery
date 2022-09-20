@@ -2,6 +2,7 @@ on:
   push:
     paths-ignore:
       - 'README.md'
+      - 'deploy-app.yaml'
 
 jobs:
   setup:
