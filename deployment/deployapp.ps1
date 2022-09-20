@@ -1,6 +1,6 @@
 param($deployEnvironment)
 
-$platformRes = (az resource list --tag stack-name=shared-container-registry | ConvertFrom-Json)
+$platformRes = (az resource list --tag ard-resource-id=shared-container-registry | ConvertFrom-Json)
 if (!$platformRes) {
     throw "Unable to find eligible platform container registry!"
 }

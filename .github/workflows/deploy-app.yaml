@@ -1,9 +1,6 @@
-on:
-  push:
-    paths-ignore:
-      - 'README.md'      
+on:  
   workflow_dispatch:
-
+  
 jobs:
   setup:
     name: Choose Secrets Environment Job
