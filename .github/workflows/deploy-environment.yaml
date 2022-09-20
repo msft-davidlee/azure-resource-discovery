@@ -1,9 +1,5 @@
 on:
-  push:
-    paths-ignore:
-      - 'README.md'
-      - 'deploy-app.yaml'
-      - 'deploy-aci.yaml'
+  workflow_dispatch:
 
 jobs:
   setup:

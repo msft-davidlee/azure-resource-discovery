@@ -1,9 +1,5 @@
 on:  
   workflow_dispatch:
-    inputs:
-      environmentselector:
-        description: 'Environment selector'
-        required: false
   
 jobs:
   setup:
