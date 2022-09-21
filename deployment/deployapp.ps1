@@ -1,7 +1,7 @@
 param($AcrName)
 
 # Login to ACR
-az acr login --name $AcrName
+az acr login --name $AcrName --expose-token
 if ($LastExitCode -ne 0) {
     throw "An error has occured. Unable to login to acr."
 }
